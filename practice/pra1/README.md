@@ -21,6 +21,8 @@
 Решение:
 Часть 1. Проверка конфигурации коммутатора по умолчанию
 
+Вводим команду sh running-config
+
 ```   sh running-config 
 Building configuration...
 
