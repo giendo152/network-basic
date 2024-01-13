@@ -272,3 +272,170 @@ Switch Ports Model              SW Version            SW Image
 ------ ----- -----              ----------            ----------
 *    1 26    WS-C2960-24TT-L    15.0(2)SE4            C2960-LANBASEK9-M
 ```
+
+```FastEthernet0/6 is up, line protocol is up (connected)
+  Hardware is Lance, address is 0001.c978.cb06 (bia 0001.c978.cb06)
+ BW 100000 Kbit, DLY 1000 usec,
+     reliability 255/255, txload 1/255, rxload 1/255
+  Encapsulation ARPA, loopback not set
+  Keepalive set (10 sec)
+  Full-duplex, 100Mb/s
+  input flow-control is off, output flow-control is off
+  ARP type: ARPA, ARP Timeout 04:00:00
+  Last input 00:00:08, output 00:00:05, output hang never
+  Last clearing of "show interface" counters never
+  Input queue: 0/75/0/0 (size/max/drops/flushes); Total output drops: 0
+  Queueing strategy: fifo
+  Output queue :0/40 (size/max)
+  5 minute input rate 0 bits/sec, 0 packets/sec
+  5 minute output rate 0 bits/sec, 0 packets/sec
+     956 packets input, 193351 bytes, 0 no buffer
+     Received 956 broadcasts, 0 runts, 0 giants, 0 throttles
+     0 input errors, 0 CRC, 0 frame, 0 overrun, 0 ignored, 0 abort
+     0 watchdog, 0 multicast, 0 pause input
+     0 input packets with dribble condition detected
+     2357 packets output, 263570 bytes, 0 underruns
+     0 output errors, 0 collisions, 10 interface resets
+     0 babbles, 0 late collision, 0 deferred
+     0 lost carrier, 0 no carrier
+     0 output buffer failures, 0 output buffers swapped out
+```
+
+i.	Изучите параметры сети VLAN по умолчанию на коммутаторе.
+
+Какое имя присвоено сети VLAN 1 по умолчанию?
+
+Какие порты расположены в сети VLAN 1?
+
+Активна ли сеть VLAN 1?
+
+К какому типу сетей VLAN принадлежит VLAN по умолчанию?
+
+```
+VLAN Name                             Status    Ports
+---- -------------------------------- --------- -------------------------------
+1    default                          active    Fa0/1, Fa0/2, Fa0/3, Fa0/4
+                                                Fa0/5, Fa0/6, Fa0/7, Fa0/8
+                                                Fa0/9, Fa0/10, Fa0/11, Fa0/12
+                                                Fa0/13, Fa0/14, Fa0/15, Fa0/16
+                                                Fa0/17, Fa0/18, Fa0/19, Fa0/20
+                                                Fa0/21, Fa0/22, Fa0/23, Fa0/24
+                                                Gig0/1, Gig0/2
+1002 fddi-default                     active    
+1003 token-ring-default               active    
+1004 fddinet-default                  active    
+1005 trnet-default                    active    
+
+VLAN Type  SAID       MTU   Parent RingNo BridgeNo Stp  BrdgMode Trans1 Trans2
+---- ----- ---------- ----- ------ ------ -------- ---- -------- ------ ------
+1    enet  100001     1500  -      -      -        -    -        0      0
+1002 fddi  101002     1500  -      -      -        -    -        0      0   
+1003 tr    101003     1500  -      -      -        -    -        0      0   
+1004 fdnet 101004     1500  -      -      -        ieee -        0      0   
+1005 trnet 101005     1500  -      -      -        ibm  -        0      0   
+
+VLAN Type  SAID       MTU   Parent RingNo BridgeNo Stp  BrdgMode Trans1 Trans2
+---- ----- ---------- ----- ------ ------ -------- ---- -------- ------ ------
+
+Remote SPAN VLANs
+------------------------------------------------------------------------------
+
+Primary Secondary Type              Ports
+------- --------- ----------------- ------------------------------------------
+```
+
+j.	Изучите флеш-память.
+
+Выполните одну из следующих команд, чтобы изучить содержимое флеш-каталога.
+
+Switch# show flash 
+
+Switch# dir flash: 
+
+В конце имени файла указано расширение, например .bin. Каталоги не имеют расширения файла.
+
+Вопрос:
+
+Какое имя присвоено образу Cisco IOS?
+
+```Directory of flash:/
+
+    1  -rw-     4670455          <no date>  2960-lanbasek9-mz.150-2.SE4.bin
+
+64016384 bytes total (59345929 bytes free)
+```
+
+
+#Часть 2. Настройка базовых параметров сетевых устройств
+
+Во второй части необходимо будет настроить основные параметры коммутатора и компьютера.
+
+#Шаг 1. Настройте базовые параметры коммутатора.
+
+a.	В режиме глобальной конфигурации скопируйте следующие базовые параметры конфигурации и вставьте их в файл на коммутаторе S1. 
+
+```no ip domain-lookup
+hostname S1
+service password-encryption
+enable secret class
+banner motd #
+Unauthorized access is strictly prohibited. #
+```
+
+b.	Назначьте IP-адрес интерфейсу SVI на коммутаторе. Благодаря этому вы получите возможность удаленного управления коммутатором.
+Прежде чем вы сможете управлять коммутатором S1 удаленно с компьютера PC-A, коммутатору нужно назначить IP-адрес. Согласно конфигурации по умолчанию коммутатором можно управлять через VLAN 1. Однако в базовой конфигурации коммутатора не рекомендуется назначать VLAN 1 в качестве административной VLAN.
+
+Поэтому возьмем Vlan 99 для административных целей.
+Для начала создайте на коммутаторе новую VLAN 99. Затем настройте IP-адрес коммутатора на 192.168.1.2 с маской подсети 255.255.255.0 на внутреннем виртуальном интерфейсе (SVI) VLAN 99.
+
+```S1# configure terminal
+S1(config)# vlan 99
+S1(config-vlan)# exit
+S1(config)# interface vlan99
+%LINEPROTO-5-UPDOWN: Line protocol on Interface Vlan99, changed state to down
+S1(config-if)# ip address 192.168.1.3 255.255.255.0
+S1(config-if)# no shutdown
+S1(config-if)# exit
+S1(config)#
+```
+
+c.	Доступ через порт консоли также следует ограничить  с помощью пароля. Используйте cisco в качестве пароля для входа в консоль в этом задании. Конфигурация по умолчанию разрешает все консольные подключения без пароля. Чтобы консольные сообщения не прерывали выполнение команд, используйте параметр logging synchronous.
+
+```S1(config)# line con 0
+S1(config-line)# logging synchronous 
+```
+
+d.	Настройте каналы виртуального соединения для удаленного управления (vty), чтобы коммутатор разрешил доступ через Telnet. Если не настроить пароль VTY, будет невозможно подключиться к коммутатору по протоколу Telnet.
+
+```S1(config)# line vty 0 15
+S1(config-line)# password cisco
+S1(config-line)# login
+S1(config-line)# end
+S1#
+```
+
+Вопрос:
+
+Для чего нужна команда login?
+
+Команда login обеспечивает процесс аутентификации пользователя и является обязательной для линий подключенияIOS-коммутаторов. 
+
+#Шаг 2. Настройте IP-адрес на компьютере PC-A.
+
+Назначьте компьютеру IP-адрес и маску подсети в соответствии с таблицей адресации.
+
+1)	Перейдите в Панель управления. (Control Panel)
+
+2)	В представлении «Категория» выберите « Просмотр состояния сети и задач».
+
+3)	Щелкните Изменение параметров адаптера на левой панели.
+
+4)	Щелкните правой кнопкой мыши интерфейс Ethernet и выберите «Свойства» .
+
+5)	Выберите Протокол Интернета версии 4 (TCP/IPv4) > Свойства.
+
+6)	Выберите Использовать следующий IP-адрес и введите IP-адрес и маску подсети  и нажмите ОК.
+
+#Часть 3. Проверка сетевых подключений
+
+В третьей части лабораторной работы вам предстоит проверить и задокументировать конфигурацию коммутатора, протестировать сквозное соединение между компьютером PC-A и коммутатором S1, а также протестировать возможность удаленного управления коммутатором.
