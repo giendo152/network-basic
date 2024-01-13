@@ -1,4 +1,4 @@
-Базовая настройка коммутатора
+# Базовая настройка коммутатора
 
 Задачи
 
@@ -398,6 +398,36 @@ S1(config-if)# no shutdown
 S1(config-if)# exit
 S1(config)#
 ```
+Обратите внимание, что интерфейс VLAN 99 выключен, несмотря на то, что вы ввели команду no shutdown. В настоящее время интерфейс выключен, поскольку сети VLAN 99 не назначены порты коммутатора.
+
+Ассоциируйте все пользовательские порты с VLAN 99.
+S1(config)# interface range f0/1 – 24,g0/1 - 2
+S1(config-if-range)# switchport access vlan 99
+S1(config-if-range)# exit
+S1(config)#
+%LINEPROTO-5-UPDOWN: Line protocol on Interface Vlan1, changed state to down
+%LINEPROTO-5-UPDOWN: Line protocol on Interface Vlan99, changed state to up
+
+Чтобы установить подключение между узлом и коммутатором, порты, используемые узлом , должны находиться в той же VLAN, что и коммутатор. Обратите внимание, что в выходных данных выше интерфейс VLAN 1 выключен, поскольку ни один из портов не назначен сети VLAN 1. Через несколько секунд VLAN 99 включится, потому что как минимум один активный порт (F0/6, к которому подключён компьютер PC-A) назначен сети VLAN 99.
+
+Чтобы убедиться, что все пользовательские порты находятся в сети VLAN 99, выполните команду show vlan brief
+
+```VLAN Name                             Status    Ports
+---- -------------------------------- --------- -------------------------------
+1    default                          active    
+99   VLAN0099                         active    Fa0/1, Fa0/2, Fa0/3, Fa0/4
+                                                Fa0/5, Fa0/6, Fa0/7, Fa0/8
+                                                Fa0/9, Fa0/10, Fa0/11, Fa0/12
+                                                Fa0/13, Fa0/14, Fa0/15, Fa0/16
+                                                Fa0/17, Fa0/18, Fa0/19, Fa0/20
+                                                Fa0/21, Fa0/22, Fa0/23, Fa0/24
+                                                Gig0/1, Gig0/2
+1002 fddi-default                     active    
+1003 token-ring-default               active    
+1004 fddinet-default                  active    
+1005 trnet-default                    active
+```
+Настройте IP-шлюз по умолчанию для коммутатора S1. Если не настроен ни один шлюз по умолчанию, коммутатором нельзя управлять из удалённой сети, на пути к которой имеется более одного маршрутизатора. Он не отвечает на эхо -запросы из удалённой сети. Хотя в этом упражнении не учитывается внешний IP-шлюз, представьте, что впоследствии вы подключите LAN к маршрутизатору для обеспечения внешнего доступа. При условии, что интерфейс LAN маршрутизатора равен 192.168.1.1, настройте шлюз по умолчанию для коммутатора.
 
 c.	Доступ через порт консоли также следует ограничить  с помощью пароля. Используйте cisco в качестве пароля для входа в консоль в этом задании. Конфигурация по умолчанию разрешает все консольные подключения без пароля. Чтобы консольные сообщения не прерывали выполнение команд, используйте параметр logging synchronous.
 
@@ -434,8 +464,225 @@ S1#
 
 5)	Выберите Протокол Интернета версии 4 (TCP/IPv4) > Свойства.
 
-6)	Выберите Использовать следующий IP-адрес и введите IP-адрес и маску подсети  и нажмите ОК.
+6)	Выберите Использовать следующий IP-адрес и введите IP-адрес и маску подсети  и нажмите ОК. (Ip у нас будет - 192.168.1.10/24)
 
 #Часть 3. Проверка сетевых подключений
 
 В третьей части лабораторной работы вам предстоит проверить и задокументировать конфигурацию коммутатора, протестировать сквозное соединение между компьютером PC-A и коммутатором S1, а также протестировать возможность удаленного управления коммутатором.
+
+
+#Шаг 1. Отобразите конфигурацию коммутатора.
+Используйте консольное подключение на компьютере PC-A для отображения и проверки конфигурации коммутатора. Команда show run позволяет постранично отобразить всю текущую конфигурацию. Для пролистывания используйте клавишу пробела.
+
+a.	Пример конфигурации приведен ниже. Параметры, которые вы настроили, выделены желтым. Другие параметры конфигурации — значения IOS по умолчанию.
+
+Откройте окно конфигурации
+
+```S1# show run
+Building configuration...
+
+Current configuration : 2206 bytes
+!
+version 15.2
+no service pad
+service timestamps debug datetime msec
+service timestamps log datetime msec
+service password-encryption
+!
+hostname S1
+!
+boot-start-marker
+boot-end-marker
+!
+enable secret 5 $1$mtvC$6NC.1VKr3p6bj7YGE.jNg0
+!
+no aaa new-model
+system mtu routing 1500 
+!
+!
+no ip domain-lookup
+!
+<output omitted>
+!
+interface FastEthernet0/24
+ switchport access vlan 99
+!
+interface GigabitEthernet0/1
+ switchport access vlan 99
+!
+interface GigabitEthernet0/2
+ switchport access vlan 99
+!
+interface Vlan1
+ ip address 192.168.1.2 255.255.255.0
+!
+ip default-gateway 192.168.1.1
+ip http server
+ip http secure-server
+!
+banner motd ^C
+Unauthorized access is strictly prohibited. ^C
+!
+line con 0
+ password 7 00071A150754
+ logging synchronous
+ login
+line vty 0 4
+ password 7 121A0C041104
+ login
+line vty 5 15
+ password 7 121A0C041104
+ login
+!
+end
+```
+
+b.	Проверьте параметры VLAN 1.
+
+S1# show interface vlan 1 
+
+```Vlan1 is up, line protocol is down
+  Hardware is CPU Interface, address is 00e0.f7c3.b348 (bia 00e0.f7c3.b348)
+  Internet address is 192.168.1.2/24
+  MTU 1500 bytes, BW 100000 Kbit, DLY 1000000 usec,
+     reliability 255/255, txload 1/255, rxload 1/255
+  Encapsulation ARPA, loopback not set
+  ARP type: ARPA, ARP Timeout 04:00:00
+  Last input 21:40:21, output never, output hang never
+  Last clearing of "show interface" counters never
+  Input queue: 0/75/0/0 (size/max/drops/flushes); Total output drops: 0
+  Queueing strategy: fifo
+  Output queue: 0/40 (size/max)
+  5 minute input rate 0 bits/sec, 0 packets/sec
+  5 minute output rate 0 bits/sec, 0 packets/sec
+     1682 packets input, 530955 bytes, 0 no buffer
+     Received 0 broadcasts (0 IP multicast)
+     0 runts, 0 giants, 0 throttles
+     0 input errors, 0 CRC, 0 frame, 0 overrun, 0 ignored
+     563859 packets output, 0 bytes, 0 underruns
+     0 output errors, 23 interface resets
+     0 output buffer failures, 0 output buffers swapped out
+```
+
+Какова полоса пропускания этого интерфейса?
+
+В каком состоянии находится VLAN 1?
+
+В каком состоянии находится канальный протокол?
+
+#Шаг 2. Протестируйте сквозное соединение, отправив эхо-запрос.
+
+a.	В командной строке компьютера PC-A с помощью утилиты ping проверьте связь сначала с адресом PC-A.
+C:\> ping 192.168.1.10 
+
+```%SYS-5-CONFIG_I: Configured from console by console
+
+S1#ping 192.168.1.10
+
+Type escape sequence to abort.
+Sending 5, 100-byte ICMP Echos to 192.168.1.10, timeout is 2 seconds:
+.!!!!
+Success rate is 80 percent (4/5), round-trip min/avg/max = 0/0/0 ms
+```
+
+b.	Из командной строки компьютера PC-A отправьте эхо-запрос на административный адрес интерфейса SVI коммутатора S1.
+C:\> ping 192.168.1.2
+
+```Pinging 192.168.1.2 with 32 bytes of data:
+
+Request timed out.
+Reply from 192.168.1.2: bytes=32 time<1ms TTL=255
+Reply from 192.168.1.2: bytes=32 time<1ms TTL=255
+Reply from 192.168.1.2: bytes=32 time=4ms TTL=255
+```
+
+Поскольку компьютеру PC-A нужно преобразовать МАС-адрес коммутатора S1 с помощью ARP, время ожидания передачи первого пакета может истечь. Если эхо-запрос не удается, найдите и устраните неполадки базовых настроек устройства. Проверьте как физические кабели, так и логическую адресацию.
+
+#Шаг 3. Проверьте удаленное управление коммутатором S1.
+
+После этого используйте удаленный доступ к устройству с помощью Telnet. В этой лабораторной работе устройства PC-A и S1 расположены рядом. В производственной сети коммутатор может находиться в коммутационном шкафу на последнем этаже, в то время как административный компьютер находится на первом этаже. На данном этапе вам предстоит использовать Telnet для удаленного доступа к коммутатору S1 через его административный адрес SVI. Telnet — это не безопасный протокол, но вы можете использовать его для проверки удаленного доступа. В случае с Telnet вся информация, включая пароли и команды, отправляется через сеанс в незашифрованном виде. В последующих лабораторных работах вы будете использовать протокол SSH для удаленного доступа к сетевым устройствам.
+
+a.	Откройте Tera Term или другую программу эмуляции терминала с возможностью Telnet. 
+C:\Users\User1> telnet 192.168.1.2
+b.	Выберите сервер Telnet и укажите адрес управления SVI для подключения к S1.  Пароль: cisco.
+
+c.	После ввода пароля cisco вы окажетесь в командной строке пользовательского режима. Для перехода в исполнительский режим EXEC введите команду enable и используйте секретный пароль class.
+
+d.	Сохраните конфигурацию.
+
+e.	Чтобы завершить сеанс Telnet, введите exit.
+
+```C:\>telnet 192.168.1.3
+Trying 192.168.1.3 ...Open
+
+
+
+User Access Verification
+
+Password: 
+Password: 
+S1>en
+Password: 
+S1#co
+S1#cop
+S1#copy ru
+S1#copy running-config st
+S1#copy running-config startup-config 
+Destination filename [startup-config]? 
+Building configuration...
+[OK]
+S1#
+```
+
+# Вопросы для повторения
+
+1.	Зачем необходимо настраивать пароль VTY для коммутатора?
+
+Если не настроить пароль VTY, будет невозможно подключиться к коммутатору по протоколу Telnet.
+
+2.	Что нужно сделать, чтобы пароли не отправлялись в незашифрованном виде?
+	
+Необходимо использовать глобальную команду service password encryption.
+
+	Приложение А. Инициализация и перезагрузка коммутатора
+a.	Подключитесь к коммутатору с помощью консоли и войдите в привилегированный режим EXEC.
+Откройте окно конфигурации
+Switch> enable
+Switch#
+b.	Воспользуйтесь командой show flash, чтобы определить, были ли созданы сети VLAN на коммутаторе.
+Switch# show flash
+Каталог flash:/
+
+```Directory of flash:/
+
+    1  -rw-     4670455          <no date>  2960-lanbasek9-mz.150-2.SE4.bin
+    3  -rw-        2034          <no date>  config.text
+    2  -rw-         616          <no date>  vlan.dat
+
+64016384 bytes total (59343279 bytes free)
+```
+
+c.	Если во флеш-памяти обнаружен файл vlan.dat, удалите его.
+Switch# delete vlan.dat
+Delete filename [vlan.dat]?
+d.	Появится запрос о проверке имени файла. Если вы ввели имя правильно, нажмите клавишу Enter. В противном случае вы можете изменить имя файла.
+Будет предложено подтвердить удаление этого файла. Нажмите клавишу Enter для подтверждения.
+Delete flash:/vlan.dat? [confirm]
+Switch#
+e.	Введите команду erase startup-config, чтобы удалить файл загрузочной конфигурации из NVRAM. Появится запрос об удалении конфигурационного файла. Нажмите клавишу Enter для подтверждения.
+Switch# erase startup-config
+Erasing the nvram filesystem will remove all configuration files! Продолжить? [confirm]
+[OK]
+Erase of nvram: complete
+Switch#
+f.	Перезагрузите коммутатор, чтобы удалить устаревшую информацию о конфигурации из памяти. Затем появится запрос на подтверждение перезагрузки коммутатора. Нажмите клавишу Enter, чтобы продолжить.
+Switch# reload
+Proceed with reload? (Команда reload запускается на активном модуле, будет перезагружен весь стек. Продолжить ее выполнение?) [confirm]
+Примечание. До перезагрузки коммутатора может появиться запрос о сохранении текущей конфигурации. Чтобы ответить, введите no и нажмите клавишу Enter.
+System configuration has been modified. Save? [yes/no]: no
+g.	После перезагрузки коммутатора появится запрос о входе в диалоговое окно начальной конфигурации. Чтобы ответить, введите no и нажмите клавишу Enter.
+Would you like to enter the initial configuration dialog? [yes/no]: no
+Switch>
+
+
+
