@@ -239,4 +239,36 @@ e.	Изучите IP-свойства интерфейса SVI сети VLAN 1.
   BGP Policy Mapping is disabled
 ```
 
+f. Подключите Ethernet-кабель компьютера PC-A к порту 6 на коммутаторе и изучите IP-свойства интерфейса SVI сети VLAN 1. Дождитесь согласования параметров скорости и дуплекса между коммутатором и ПК.
 
+g.	Изучите сведения о версии ОС Cisco IOS на коммутаторе.
+
+Вопросы:
+
+Под управлением какой версии ОС Cisco IOS работает коммутатор?
+
+Как называется файл образа системы?
+
+Какой базовый MAC-адрес назначен коммутатору?
+
+```64K bytes of flash-simulated non-volatile configuration memory.
+Base ethernet MAC Address       : 00:E0:F7:C3:B3:48
+Motherboard assembly number     : 73-10390-03
+Power supply part number        : 341-0097-02
+Motherboard serial number       : FOC10093R12
+Power supply serial number      : AZS1007032H
+Model revision number           : B0
+Motherboard revision number     : B0
+Model number                    : WS-C2960-24TT-L
+System serial number            : FOC1010X104
+Top Assembly Part Number        : 800-27221-02
+Top Assembly Revision Number    : A0
+Version ID                      : V02
+CLEI Code Number                : COM3L00BRA
+Hardware Board Revision Number  : 0x01
+
+
+Switch Ports Model              SW Version            SW Image
+------ ----- -----              ----------            ----------
+*    1 26    WS-C2960-24TT-L    15.0(2)SE4            C2960-LANBASEK9-M
+```
