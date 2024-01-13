@@ -236,6 +236,7 @@ e.	Изучите IP-свойства интерфейса SVI сети VLAN 1.
   WCCP Redirect outbound is disabled 
   WCCP Redirect inbound is disabled 
   WCCP Redirect exclude is disabled 
-  BGP Policy Mapping is disabled ```
+  BGP Policy Mapping is disabled
+```
 
 
