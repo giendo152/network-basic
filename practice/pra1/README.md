@@ -21,7 +21,7 @@
 Решение:
 Часть 1. Проверка конфигурации коммутатора по умолчанию
 
-   sh running-config 
+```   sh running-config 
 Building configuration...
 
 Current configuration : 1080 bytes
@@ -111,3 +111,4 @@ line vty 5 15
 !
 !
 end
+```
