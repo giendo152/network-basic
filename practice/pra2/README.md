@@ -2,7 +2,7 @@
 
 # Топология
 
-![alt-текст](https://github.com/network-basic/blob/main/practice/pra2/topologi.png)
+![Image alt](https://github.com/network-basic/blob/main/practice/pra2/topologi.png)
 
 
 
