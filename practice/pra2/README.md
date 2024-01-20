@@ -55,6 +55,16 @@ a.	Настройте имена устройств в соответствии 
 
 b.	Настройте IP-адреса, как указано в таблице адресации.
 
+``S2>en
+S2#conf t
+Enter configuration commands, one per line.  End with CNTL/Z.
+S2(config)#int vlan 1
+S2(config-if)#ip add
+S2(config-if)#ip address 192.168.1.12 255.255.255.0
+S2(config-if)#no sh
+S2(config-if)#no shutdown 
+``
+
 c.	Назначьте cisco в качестве паролей консоли и VTY.
 
 d.	Назначьте class в качестве пароля доступа к привилегированному режиму EXEC.
