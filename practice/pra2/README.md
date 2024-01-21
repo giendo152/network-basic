@@ -140,7 +140,7 @@ S2# show mac address-table
 
 Записаны ли в таблице МАС-адресов какие-либо МАС-адреса?
 
-```S2#sh mac address-table 
+```S2# show mac address-table
           Mac Address Table
 -------------------------------------------
 
@@ -153,7 +153,15 @@ S2#
 
 Какие МАС-адреса записаны в таблице? С какими портами коммутатора они сопоставлены и каким устройствам принадлежат? Игнорируйте МАС-адреса, сопоставленные с центральным процессором.
 
+Ответ:
+
+В таблице MAC-адресов может быть записано несколько MAC-адресов, особенно MAC-адресов, полученных через порт коммутатора F0/1 S1. В приведенном выше примере MAC-адрес S1 F0/1 и MAC-адрес PC-A сопоставляются с S2 F0/1.
+
 Если вы не записали МАС-адреса сетевых устройств в шаге 1, как можно определить, каким устройствам принадлежат МАС-адреса, используя только выходные данные команды show mac address-table? Работает ли это решение в любой ситуации?
+
+Ответ:
+
+Выходные данные команды show mac address-table показывают порт, на котором был получен MAC-адрес. В большинстве случаев это позволит определить, какому сетевому устройству принадлежит MAC-адрес, за исключением случаев, когда несколько MAC-адресов связаны с одним и тем же портом. Это происходит, когда коммутаторы подключены к другим коммутаторам и записывают все MAC-адреса устройств, подключенных к другому коммутатору.
 
 # Шаг 3. Очистите таблицу МАС-адресов коммутатора S2 и снова отобразите таблицу МАС-адресов.
 
@@ -165,18 +173,115 @@ b.	Снова быстро введите команду show mac address-table.
 
 Указаны ли в таблице МАС-адресов адреса для VLAN 1? Указаны ли другие МАС-адреса?
 
+```S2#clear mac address-table dynamic
+
+S2#show mac address-table
+
+          Mac Address Table
+-------------------------------------------
+
+Vlan    Mac Address       Type        Ports
+----    -----------       --------    -----
+
+   1    0050.0fcc.dc01    DYNAMIC     Fa0/1
+```
+
 Через 10 секунд введите команду show mac address-table и нажмите клавишу ввода. Появились ли в таблице МАС-адресов новые адреса?
- 
+
+```S2#show mac address-table
+          Mac Address Table
+-------------------------------------------
+
+Vlan    Mac Address       Type        Ports
+----    -----------       --------    -----
+
+   1    0050.0fcc.dc01    DYNAMIC     Fa0/1
+```
 
 # Шаг 4. С компьютера PC-B отправьте эхо-запросы устройствам в сети и просмотрите таблицу МАС-адресов коммутатора.
 
+```S1#show mac address-table
+
+          Mac Address Table
+-------------------------------------------
+
+Vlan    Mac Address       Type        Ports
+----    -----------       --------    -----
+
+   1    0001.c970.c001    DYNAMIC     Fa0/1
+```
+
 a.	На компьютере PC-B откройте командную строку и еще раз введите команду arp -a.
 
+```C:\>arp -a
+No ARP Entries Found
+```
+
 Не считая адресов многоадресной и широковещательной рассылки, сколько пар IP- и МАС-адресов устройств было получено через протокол ARP?
+
+Ответ:
+
+В кэше ARP может не быть записей, или он может иметь сопоставление IP-адреса шлюза с MAC-адресом.
 
 b.	Из командной строки PC-B отправьте эхо-запросы на компьютер PC-A, а также коммутаторы S1 и S2.
 
 От всех ли устройств получены ответы? Если нет, проверьте кабели и IP-конфигурации.
+
+```C:\>ping 192.168.1.1
+
+Pinging 192.168.1.1 with 32 bytes of data:
+
+Reply from 192.168.1.1: bytes=32 time<1ms TTL=128
+Reply from 192.168.1.1: bytes=32 time<1ms TTL=128
+Reply from 192.168.1.1: bytes=32 time<1ms TTL=128
+Reply from 192.168.1.1: bytes=32 time=5ms TTL=128
+
+Ping statistics for 192.168.1.1:
+    Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),
+Approximate round trip times in milli-seconds:
+    Minimum = 0ms, Maximum = 5ms, Average = 1ms
+
+C:\>ping 192.168.1.12
+
+Pinging 192.168.1.12 with 32 bytes of data:
+
+Request timed out.
+Reply from 192.168.1.12: bytes=32 time<1ms TTL=255
+Reply from 192.168.1.12: bytes=32 time<1ms TTL=255
+Reply from 192.168.1.12: bytes=32 time<1ms TTL=255
+
+Ping statistics for 192.168.1.12:
+    Packets: Sent = 4, Received = 3, Lost = 1 (25% loss),
+Approximate round trip times in milli-seconds:
+    Minimum = 0ms, Maximum = 0ms, Average = 0ms
+
+C:\>ping 192.168.1.11
+
+Pinging 192.168.1.11 with 32 bytes of data:
+
+Request timed out.
+Reply from 192.168.1.11: bytes=32 time=5ms TTL=255
+Reply from 192.168.1.11: bytes=32 time<1ms TTL=255
+Reply from 192.168.1.11: bytes=32 time<1ms TTL=255
+
+Ping statistics for 192.168.1.11:
+    Packets: Sent = 4, Received = 3, Lost = 1 (25% loss),
+Approximate round trip times in milli-seconds:
+    Minimum = 0ms, Maximum = 5ms, Average = 1ms
+
+C:\>ping 192.168.1.2
+
+Pinging 192.168.1.2 with 32 bytes of data:
+
+Reply from 192.168.1.2: bytes=32 time=1ms TTL=128
+Reply from 192.168.1.2: bytes=32 time=3ms TTL=128
+Reply from 192.168.1.2: bytes=32 time=5ms TTL=128
+Reply from 192.168.1.2: bytes=32 time=3ms TTL=128
+
+Ping statistics for 192.168.1.2:
+    Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),
+Approximate round trip times in milli-seconds:
+    Minimum = 1ms, Maximum = 5ms, Average = 3ms
 
 c.	Подключившись через консоль к коммутатору S2, введите команду show mac address-table.
 
