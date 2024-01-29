@@ -5,11 +5,10 @@
  # Часть 2. Расчет подсетей по IPv4-адресу
 
 
-Markdown | не такой | красивый
---- | --- | ---
-*Но выводится* | `так же` | **клево**
-1 | 2 | 3
-
+| First Header  | Second Header |
+| ------------- | ------------- |
+| Content Cell  | Content Cell  |
+| Content Cell  | Content Cell  |
 # Проблема1: 
 
                                   Дано:                             
