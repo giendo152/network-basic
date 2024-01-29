@@ -5,9 +5,9 @@
  # Часть 2. Расчет подсетей по IPv4-адресу
 
 
-| First Header  | Second Header |
+| First Header           | Second Header |
 | ------------- | ------------- |
-| Content Cell  | Content Cell  |
+| Количество бит подсети  | Content Cell  |
 | Content Cell  | Content Cell  |
 # Проблема1: 
 
