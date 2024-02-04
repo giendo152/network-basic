@@ -40,8 +40,6 @@
 
 # Шаг 1. Назначьте IPv6-адреса интерфейсам Ethernet на R1.
 
-a.	Назначьте глобальные индивидуальные IPv6-адреса, указанные в таблице адресации обоим интерфейсам Ethernet на R1.
-Откройте окно конфигурации
 
 ```
 R1#conf t
@@ -73,13 +71,6 @@ R1(config-if)#
 R1(config-if)#end
 R1#
 %SYS-5-CONFIG_I: Configured from console by console
-
-R1#sh
-R1#show ip
-R1#show ipv
-R1#show ipv6 in
-R1#show ipv6 int
-R1#show ipv6 interface br
 R1#show ipv6 interface brief 
 GigabitEthernet0/0/0       [up/up]
     FE80::240:BFF:FE72:4901
@@ -94,17 +85,31 @@ Vlan1                      [administratively down/down]
 R1#
 ```
 
-b.	Введите команду show ipv6 interface brief, чтобы проверить, назначен ли каждому интерфейсу корректный индивидуальный IPv6-адрес.
-Примечание. Отображаемый локальный адрес канала основан на адресации EUI-64, которая автоматически использует MAC-адрес интерфейса для создания 128-битного локального IPv6-адреса канала.
+# Вопрос:
 
-c.	Чтобы обеспечить соответствие локальных адресов канала индивидуальному адресу, вручную введите локальные адреса канала на каждом интерфейсе Ethernet на R1.
-Примечание. Каждый интерфейс маршрутизатора относится к отдельной сети. Пакеты с локальным адресом канала никогда не выходят за пределы локальной сети, а значит, для обоих интерфейсов можно указывать один и тот же локальный адрес канала.
-
-d.	Используйте выбранную команду, чтобы убедиться, что локальный адрес связи изменен на fe80::1.  
-
-Закройте окно настройки.
-Вопрос:
 Какие группы многоадресной рассылки назначены интерфейсу G0/0?
+
+Введите команду show ipv6 interface g0/0 (g0/0/0), чтобы узнать, какие группы многоадресной рассылки назначены интерфейсу G0/0. Обратите внимание, что в списке групп для интерфейса G0/0 отображается группа многоадресной рассылки всех маршрутизаторов (FF02::2).
+
+```
+R1#show ipv6 interface g0/0/0
+GigabitEthernet0/0/0 is up, line protocol is up
+  IPv6 is enabled, link-local address is FE80::240:BFF:FE72:4901
+  No Virtual link-local address(es):
+  Global unicast address(es):
+    2001:DB8:ACAD:A::1, subnet is 2001:DB8:ACAD:A::/64
+  Joined group address(es):
+    FF02::1
+    FF02::1:FF00:1
+    FF02::1:FF72:4901
+  MTU is 1500 bytes
+  ICMP error messages limited to one every 100 milliseconds
+  ICMP redirects are enabled
+  ICMP unreachables are sent
+  ND DAD is enabled, number of DAD attempts: 1
+  ND reachable time is 30000 milliseconds
+```
+
 Шаг 2. Активируйте IPv6-маршрутизацию на R1.
 a.	В командной строке на PC-B введите команду ipconfig, чтобы получить данные IPv6-адреса, назначенного интерфейсу ПК.
 Вопрос:
