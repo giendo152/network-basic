@@ -60,11 +60,8 @@ Enter configuration commands, one per line.  End with CNTL/Z.
 Router(config)#hostname R1
 R1(config)#banner
 R1(config)#banner mot
-R1(config)#banner motd 
-% Incomplete command.
-R1(config)#
-R1#
-%SYS-5-CONFIG_I: Configured from console by console
+R1(config)#banner motd «This is a secure system. Authorized Access Only!»
+R1(config)#exit
 
 R1# conf t
 Enter configuration commands, one per line.  End with CNTL/Z.
