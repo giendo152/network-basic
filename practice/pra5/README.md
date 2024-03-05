@@ -60,8 +60,16 @@ Enter configuration commands, one per line.  End with CNTL/Z.
 Router(config)#hostname R1
 R1(config)#banner
 R1(config)#banner mot
-R1(config)#banner motd «This is a secure system. Authorized Access Only!»
+R1(config)#banner motd «anyway»
 R1(config)#exit
+
+Press RETURN to get started.
+
+anyway
+
+User Access Verification
+
+Password: 
 
 R1# conf t
 Enter configuration commands, one per line.  End with CNTL/Z.
@@ -185,6 +193,15 @@ R1(config)#
 *Mar 1 1:33:48.912: %SSH-5-ENABLED: SSH 1.99 has been enabled
 R1#
 %SYS-5-CONFIG_I: Configured from console by console
+S1#conf t
+Enter configuration commands, one per line.  End with CNTL/Z.
+S1(config)#ip ssh ve
+S1(config)#ip ssh version 2
+S1(config)#
+S1#show ip ssh 
+SSH Enabled - version 2.0
+Authentication timeout: 120 secs; Authentication retries: 3
+S1#
 ```
 
 # Шаг 3. Создайте имя пользователя в локальной базе учетных записей.
