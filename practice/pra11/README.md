@@ -468,6 +468,7 @@ R1(config)# line vty 0 4
 R1(config-line)# transport input ssh
 R1(config-line)# login local
 R1(config-line)# exit
+```
 
 # Шаг 2. Включите защищенные веб-службы с проверкой подлинности на R1.
 
